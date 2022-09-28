@@ -18,9 +18,10 @@ class WatchlistListView(generics.ListCreateAPIView):
     permission_classes = [AdminOrReadOnly]
     serializer_class = WatchListSerializer
     queryset = WatchList.objects.all()
-    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
-    search_fields = ['title', 'platform__name', 'platform__description']
-    ordering_fields = ['average_rating', 'no_of_reviews']
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter, DjangoFilterBackend]
+    filterset_fields = ['platform__name', 'date_created']
+    search_fields = ['title', 'platform__name',]
+    ordering_fields = ['average_rating', 'date_created']
     
 # class WatchlistListView(APIView):
 #     permission_classes = [IsAuthenticatedOrReadOnly]
@@ -39,7 +40,7 @@ class WatchlistListView(generics.ListCreateAPIView):
 
 
 class WatchListDetailView(APIView):
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [AdminOrReadOnly]
     
     def get_object(self, slug):
         return get_object_or_404(WatchList, slug=slug)   
@@ -65,7 +66,7 @@ class WatchListDetailView(APIView):
 
 class StreamPlatformView(viewsets.ViewSet):
     lookup_field = "slug"
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [AdminOrReadOnly]
     
     def list(self, request):
         queryset = StreamPlatform.objects.all()
@@ -142,7 +143,6 @@ class StreamPlatformView(viewsets.ViewSet):
 
 class ReviewListView(generics.ListAPIView):
     serializer_class = ReviewSerializer 
-    permission_classes = [IsAuthenticated]
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['created_by__username']
     
@@ -177,7 +177,7 @@ class ReviewDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
     permission_classes = [ReviewUserOrReadOnly]
-    throttle_scope = "review-detail"
+    
     
 
 class UserReviewList(generics.ListAPIView):
