@@ -10,7 +10,6 @@ class UserTestCase(APITestCase):
     
     def setUp(self):
         self.user = User.objects.create_user(username="exampleuser", password="Akpororo1", email="exampleuser@gmail.com")
-        self.refresh = RefreshToken.for_user(self.user)
     
     def test_create_user(self):
         data = {
