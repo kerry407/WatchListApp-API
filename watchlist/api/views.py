@@ -1,16 +1,16 @@
 from django.shortcuts import get_object_or_404 
 from rest_framework.response import Response 
-from rest_framework import status, generics, viewsets
+from rest_framework import (status, generics, viewsets)
 from rest_framework.views import APIView 
 from rest_framework.exceptions import ValidationError
 from django.db.models import Avg 
-from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly, IsAdminUser
+from rest_framework.permissions import IsAuthenticated
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
 
-from watchlist.models import WatchList, StreamPlatform, Review
-from .serializers import WatchListSerializer, StreamPlatformSerializer, ReviewSerializer
-from .permissions import ReviewUserOrReadOnly, AdminOrReadOnly
+from watchlist.models import (WatchList, StreamPlatform, Review)
+from .serializers import (WatchListSerializer, StreamPlatformSerializer, ReviewSerializer)
+from .permissions import (ReviewUserOrReadOnly, AdminOrReadOnly)
 # Create your views here.
 
 
@@ -23,21 +23,6 @@ class WatchlistListView(generics.ListCreateAPIView):
     search_fields = ['title', 'platform__name',]
     ordering_fields = ['average_rating', 'date_created']
     
-# class WatchlistListView(APIView):
-#     permission_classes = [IsAuthenticatedOrReadOnly]
-    
-#     def get(self, request):
-#         watchlists = WatchList.objects.all()
-#         serializer = WatchListSerializer(watchlists, many=True)
-#         return Response(serializer.data)
-    
-#     def post(self, request):
-#         serializer = WatchListSerializer(data=request.data)
-#         if serializer.is_valid():
-#             serializer.save()
-#             return Response(serializer.data, status=status.HTTP_201_CREATED)
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 class WatchListDetailView(APIView):
     permission_classes = [AdminOrReadOnly]
@@ -98,47 +83,6 @@ class StreamPlatformView(viewsets.ViewSet):
         queryset.delete()
         msg = "Streaming Platform successfully deleted"
         return Response(msg, status=status.HTTP_204_NO_CONTENT)
-    
-    
-    
-# class StreamPlatformListView(APIView):
-    
-#     def get(self, request):
-#         platforms = StreamPlatform.objects.all()
-#         serializer = StreamPlatformSerializer(platforms, many=True)
-#         return Response(serializer.data) 
-    
-#     def post(self, request):
-#         serializer = StreamPlatformSerializer(request.data)
-#         if serializer.is_valid():
-#             serializer.save()
-#             return Response(serializer.data, status=status.HTTP_201_CREATED)
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)   
-
-# class StreamPlatformView(APIView):
-    
-#     def get_object(self, slug):
-#         return get_object_or_404(StreamPlatform, slug=slug)
-         
-    
-#     def get(self, request, slug):
-#         platform = self.get_object(slug=slug)
-#         serializer = StreamPlatformSerializer(platform)
-#         return Response(serializer.data)
-    
-#     def put(self, request, slug):
-#         platform = self.get_object(slug=slug)
-#         serializer = StreamPlatformSerializer(platform, request.data)
-#         if serializer.is_valid():
-#             serializer.save()
-#             return Response(serializer.data, stus=status.HTTP_202_ACCEPTED)
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
-#     def delete(self, request, slug):
-#         platform = self.get_object(slug=slug)
-#         platform.delete()
-#         msg = "Platform successfully deleted"
-#         return Response(msg, status=status.HTTP_204_NO_CONTENT)
         
 
 class ReviewListView(generics.ListAPIView):
@@ -182,11 +126,6 @@ class ReviewDetailView(generics.RetrieveUpdateDestroyAPIView):
 
 class UserReviewList(generics.ListAPIView):
     serializer_class = ReviewSerializer 
-    
-    # def get_queryset(self):
-    #     user_object = self.kwargs['username']
-    #     review = Review.objects.filter(created_by__username=user_object)
-    #     return review 
     
     def get_queryset(self):
         queryset = Review.objects.all()

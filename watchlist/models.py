@@ -8,6 +8,7 @@ class StreamPlatform(models.Model):
     name = models.CharField(max_length=50)
     description = models.CharField(max_length=200)
     website = models.URLField() 
+    image = models.ImageField(upload_to="streams/images", null=True, blank=True)
     slug = models.SlugField(db_index=True, editable=False, null=False, default='')
     
     def save(self, *args, **kwargs):
@@ -26,6 +27,8 @@ class WatchList(models.Model):
     date_created = models.DateTimeField(auto_now_add=True)
     slug = models.SlugField(db_index=True, editable=False, null=False, default='')
     platform = models.ForeignKey(StreamPlatform, on_delete=models.CASCADE, null=True, related_name='watchlists')
+    image = models.ImageField(upload_to="watchlist/images", null=True, blank=True)
+    trailer = models.FileField(upload_to="watchlist/videos", null=True, blank=True)
     
     def save(self, *args, **kwargs):
         self.slug = slugify(self.title)
