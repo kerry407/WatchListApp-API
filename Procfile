@@ -1,2 +1,2 @@
-web: gunicorn watchmate.wsgi --log-file -
+web: gunicorn watchmate.wsgi
 
