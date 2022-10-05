@@ -24,18 +24,22 @@ class ModelSetup:
                                                             description="platform for streaming movies too", 
                                                             website="www.netflix.com"
                                                             )
+        self.category1 = Category.objects.create(name="horror")
+        self.category2 = Category.objects.create(name="Action")
         self.watchlist1 = WatchList.objects.create(
                                                 title="The hulk",
                                                 summary="the hulk movie",
                                                 is_active=True,
                                                 platform=self.stream_platform1
                                                 )
+        self.watchlist1.category.add(self.category1)
         self.watchlist2 = WatchList.objects.create(
                                                 title="Aquaman",
                                                 summary="the aquaman movie",
                                                 is_active=True,
                                                 platform=self.stream_platform2
                                                 )
+        self.watchlist1.category.add(self.category2)
         self.refresh = RefreshToken.for_user(self.user)
         self.access_token = self.refresh.access_token
         self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {self.access_token}")
@@ -75,7 +79,8 @@ class WatchListTestCase(ModelSetup, APITestCase):
             "title": "Superwoman",
             "summary": "superwoman",
             "is_active": True,
-            "platform": self.stream_platform1
+            "platform": self.stream_platform1,
+            "category": [self.category1]
         }
         response = self.client.post(reverse("watchlists"), data)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
@@ -94,3 +99,22 @@ class ReviewTestCase(ModelSetup, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         
     
+class CategoryTestCase(ModelSetup, APITestCase):
+    def setUp(self):
+        return super().common_model_setup()
+    
+    def test_category_list(self):
+        response = self.client.get(reverse("category-list"))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        
+    def test_category_detail(self):
+        response = self.client.get(reverse("category-detail", args=[self.category2.slug]))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        
+    def test_category_create(self):
+        data = {"name": "Drama"}
+        response = self.client.post(reverse("category-list"), data)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        
+
+        

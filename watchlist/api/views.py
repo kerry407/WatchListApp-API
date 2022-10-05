@@ -8,8 +8,9 @@ from rest_framework.permissions import IsAuthenticated
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
 
-from watchlist.models import (WatchList, StreamPlatform, Review)
-from .serializers import (WatchListSerializer, StreamPlatformSerializer, ReviewSerializer)
+from watchlist.models import (Category, WatchList, StreamPlatform, Review)
+from .pagination import CustomPagination
+from .serializers import *
 from .permissions import (ReviewUserOrReadOnly, AdminOrReadOnly)
 # Create your views here.
 
@@ -19,9 +20,10 @@ class WatchlistListView(generics.ListCreateAPIView):
     serializer_class = WatchListSerializer
     queryset = WatchList.objects.all()
     filter_backends = [filters.SearchFilter, filters.OrderingFilter, DjangoFilterBackend]
-    filterset_fields = ['platform__name', 'date_created']
-    search_fields = ['title', 'platform__name',]
+    filterset_fields = ['platform__name', 'date_created', 'category__name']
+    search_fields = ['title', 'platform__name', 'category__name']
     ordering_fields = ['average_rating', 'date_created']
+    pagination_class = CustomPagination
     
 
 class WatchListDetailView(APIView):
@@ -48,7 +50,16 @@ class WatchListDetailView(APIView):
         watchlist.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
     
-
+    
+class WatchListByCategory(generics.ListAPIView):
+    serializer_class = WatchListSerializer
+    
+    def get_queryset(self):
+        slug = self.kwargs["slug"]
+        queryset = WatchList.objects.filter(category__slug=slug)
+        return queryset
+    
+    
 class StreamPlatformView(viewsets.ViewSet):
     lookup_field = "slug"
     permission_classes = [AdminOrReadOnly]
@@ -88,6 +99,7 @@ class StreamPlatformView(viewsets.ViewSet):
 class ReviewListView(generics.ListAPIView):
     serializer_class = ReviewSerializer 
     filter_backends = [DjangoFilterBackend]
+    pagination_class = CustomPagination
     filterset_fields = ['created_by__username']
     
     def get_queryset(self):
@@ -134,4 +146,19 @@ class UserReviewList(generics.ListAPIView):
             queryset = queryset.filter(created_by__username=username)
         return queryset
     
+
+class CategoryListView(generics.ListCreateAPIView):
+    serializer_class = CategorySerializer
+    queryset = Category.objects.all()
+    permission_classes = [AdminOrReadOnly]
     
+class CategoryDetailView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = CategorySerializer 
+    queryset = Category.objects.all()
+    permission_classes = [AdminOrReadOnly]
+    lookup_field = "slug"
+    
+
+    
+        
+            

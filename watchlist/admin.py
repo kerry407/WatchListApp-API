@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import StreamPlatform, WatchList, Review
+from .models import StreamPlatform, WatchList, Review, Category
 # Register your models here.
 
 
@@ -15,5 +15,10 @@ class WatchListAdmin(admin.ModelAdmin):
     
 @admin.register(Review)
 class ReviewAdmin(admin.ModelAdmin):
-    list_display = ['created_by', 'rating', 'created_on', 'updated_on']
-    list_filter = ['created_by', 'created_on', 'rating']
+    list_display = ['created_by', 'rating', ]
+    list_filter = ['created_by', 'rating']
+    
+@admin.register(Category)
+class CategoryAdmin(admin.ModelAdmin):
+    list_display = ["name"]
+    list_display_links = ["name"]

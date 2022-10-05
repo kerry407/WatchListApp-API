@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from watchlist.models import WatchList, StreamPlatform, Review
+from watchlist.models import WatchList, StreamPlatform, Review, Category
 
 class ReviewSerializer(serializers.ModelSerializer):
     watchlist_title = serializers.SerializerMethodField()
@@ -31,3 +31,8 @@ class StreamPlatformSerializer(serializers.ModelSerializer):
         model = StreamPlatform
         exclude = ["id"]
         
+class CategorySerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = Category 
+        fields = ["name"]
