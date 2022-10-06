@@ -1,3 +1,4 @@
+from ast import Delete
 from django.shortcuts import get_object_or_404 
 from rest_framework.response import Response 
 from rest_framework import (status, generics, viewsets)
@@ -11,7 +12,7 @@ from rest_framework import filters
 from watchlist.models import (Category, WatchList, StreamPlatform, Review)
 from .pagination import CustomPagination
 from .serializers import *
-from .permissions import (ReviewUserOrReadOnly, AdminOrReadOnly)
+from .permissions import (ReviewUserOrReadOnly, AdminOrReadOnly, WatchlistUserOnly)
 # Create your views here.
 
 
@@ -159,6 +160,43 @@ class CategoryDetailView(generics.RetrieveUpdateDestroyAPIView):
     lookup_field = "slug"
     
 
+class UsersWatchlistCreateView(generics.CreateAPIView):
+    serializer_class = UsersWatchListSerializer
+    permission_classes = [IsAuthenticated]
+
+    def create(self, request, *args, **kwargs):
+        slug = self.kwargs["slug"]
+        watchlist = WatchList.objects.get(slug=slug)
+        saved_watchlist = watchlist.userswatchlist_set.filter(watchlist__slug=slug)
+
+        try:
+            user_watchlist = UsersWatchList.objects.get(user__id=self.request.user.pk)
+            
+            if not saved_watchlist:
+                user_watchlist.watchlist.add(watchlist.pk)
+                return Response({"msg": f"{watchlist.title} added to watchlist"}, status=status.HTTP_201_CREATED)
+            else:
+                user_watchlist.watchlist.remove(watchlist.pk)
+                return Response({"msg": f"{watchlist.title} removed watchlist"}, status=status.HTTP_204_NO_CONTENT)
+            
+        except UsersWatchList.DoesNotExist:
+            new_user_watchlist = UsersWatchList()
+            new_user_watchlist.user = self.request.user 
+            new_user_watchlist.save()
+            new_user_watchlist.watchlist.add(watchlist.pk)
+            return Response({"msg": f"{watchlist.title} added to watchlist"}, status=status.HTTP_201_CREATED)
+        
+            
+            
+class UserWatchlistListView(generics.ListAPIView):
+    serializer_class = UsersWatchListSerializer
+    permission_classes = [WatchlistUserOnly]
+            
+    def get_queryset(self):
+    
+        queryset = UsersWatchList.objects.filter(user__username=self.request.user.username)
+        return queryset 
+            
     
         
             

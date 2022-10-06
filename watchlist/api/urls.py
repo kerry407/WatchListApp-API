@@ -15,5 +15,7 @@ urlpatterns = [
     path("watchlist/reviews/", views.UserReviewList.as_view(), name="user-reviews"),
     path("categories/", views.CategoryListView.as_view(), name="category-list"),
     path("category/<str:slug>/", views.CategoryDetailView.as_view(), name="category-detail"),
-    path("watchlist/category/<str:slug>/", views.WatchListByCategory.as_view(), name="category-watclist")
+    path("watchlist/category/<str:slug>/", views.WatchListByCategory.as_view(), name="category-watclist"),
+    path("watchlist/<str:slug>/add-to-watchlist/", views.UsersWatchlistCreateView.as_view(), name="add-to-watchlist"),
+    path("my-watchlists/", views.UserWatchlistListView.as_view(), name="users-watchlist")
 ]

@@ -73,3 +73,13 @@ class Review(models.Model):
     
     def __str__(self):
         return f"Review by {self.created_by} about {self.watchlist.title}"
+
+
+class UsersWatchList(models.Model):
+    updated_on = models.DateTimeField(auto_now=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    watchlist = models.ManyToManyField(WatchList, blank=True)
+    
+    def __str__(self):
+        watchlist_count = self.watchlist.count()
+        return f"{watchlist_count} watchlists added by {self.user.username}"

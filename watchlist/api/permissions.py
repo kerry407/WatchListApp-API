@@ -15,3 +15,8 @@ class ReviewUserOrReadOnly(permissions.BasePermission):
             return True
         else:
             obj.created_by == request.user 
+            
+class WatchlistUserOnly(permissions.BasePermission):
+    
+    def has_object_permission(self, request, view, obj):
+        return obj.user == request.user

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from watchlist.models import WatchList, StreamPlatform, Review, Category
+from watchlist.models import WatchList, StreamPlatform, Review, Category, UsersWatchList
 
 class ReviewSerializer(serializers.ModelSerializer):
     watchlist_title = serializers.SerializerMethodField()
@@ -36,3 +36,16 @@ class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category 
         fields = ["name"]
+        
+
+class UsersWatchListSerializer(serializers.ModelSerializer):
+    watchlist_count = serializers.SerializerMethodField()
+    user = serializers.StringRelatedField(read_only=True)
+    watchlist = serializers.StringRelatedField(many=True, read_only=True)
+    class Meta:
+        model = UsersWatchList
+        fields = ["watchlist_count", "user", "watchlist"]
+        
+    def get_watchlist_count(self, obj):
+        return obj.watchlist.count()
+    

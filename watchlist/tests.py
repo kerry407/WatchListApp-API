@@ -117,4 +117,18 @@ class CategoryTestCase(ModelSetup, APITestCase):
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         
 
+class UsersWatchlistTestCase(ModelSetup, APITestCase):
+    
+    def setUp(self):
+        return super().common_model_setup()
+    
+    def test_add_to_watchlist(self):
+        
+        response = self.client.post(reverse("add-to-watchlist", args=[self.watchlist1.slug]))
+        print(response.json())
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        # Try a second time to delete
+        new_response = self.client.post(reverse("add-to-watchlist", args=[self.watchlist1.slug]))
+        self.assertEqual(new_response.status_code, status.HTTP_204_NO_CONTENT)
+        
         
