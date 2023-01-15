@@ -1,7 +1,7 @@
 from .base import *
 
 
-DEBUG = False
+DEBUG = True
 ALLOWED_HOSTS = ["web-production-b8ca.up.railway.app"]
 
 
