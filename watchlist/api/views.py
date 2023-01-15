@@ -31,7 +31,7 @@ class WatchListDetailView(APIView):
     permission_classes = [AdminOrReadOnly]
     
     def get_object(self, slug):
-        return get_object_or_404(WatchList, slug=slug)   
+        return get_object_or_404(WatchList, slug=slug) 
     
     def get(self, request, slug):
         watchlist = self.get_object(slug)
@@ -186,7 +186,10 @@ class UsersWatchlistCreateView(generics.CreateAPIView):
             new_user_watchlist.watchlist.add(watchlist.pk)
             return Response({"msg": f"{watchlist.title} added to watchlist"}, status=status.HTTP_201_CREATED)
         
-            
+# if user_watchlist.watchlist.count() > 0:
+#             user_watchlist.watchlist.remove(watchlist.pk)
+# else:
+#     user_watchlist.delete()          
             
 class UserWatchlistListView(generics.ListAPIView):
     serializer_class = UsersWatchListSerializer

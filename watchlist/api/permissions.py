@@ -1,4 +1,3 @@
-from math import perm
 from rest_framework import permissions 
 
 class AdminOrReadOnly(permissions.IsAdminUser):
