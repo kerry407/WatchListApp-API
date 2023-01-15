@@ -2,7 +2,7 @@ from .base import *
 
 
 DEBUG = False
-ALLOWED_HOSTS = ["netwatch.herokuapp.com"]
+ALLOWED_HOSTS = ["web-production-b8ca.up.railway.app"]
 
 
 # Database
